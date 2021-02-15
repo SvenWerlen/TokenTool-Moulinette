@@ -16,33 +16,13 @@ package net.rptools.tokentool.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.NavigableSet;
-import java.util.Optional;
-import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.UnaryOperator;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.css.PseudoClass;
 import javafx.embed.swing.SwingFXUtils;
@@ -51,69 +31,53 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ColorPicker;
+import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Slider;
-import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextFormatter.Change;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseDragEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.RotateEvent;
-import javafx.scene.input.ScrollEvent;
-import javafx.scene.input.TransferMode;
-import javafx.scene.input.ZoomEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.input.*;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
-import javax.imageio.ImageIO;
 import net.rptools.tokentool.AppConstants;
 import net.rptools.tokentool.AppPreferences;
-import net.rptools.tokentool.client.Credits;
-import net.rptools.tokentool.client.ManageOverlays;
-import net.rptools.tokentool.client.PdfViewer;
-import net.rptools.tokentool.client.RegionSelector;
-import net.rptools.tokentool.client.TokenTool;
+import net.rptools.tokentool.client.*;
 import net.rptools.tokentool.model.ImageView_Preferences;
 import net.rptools.tokentool.model.Window_Preferences;
+import net.rptools.tokentool.moulinette.Token;
 import net.rptools.tokentool.util.FileSaveUtil;
 import net.rptools.tokentool.util.I18N;
 import net.rptools.tokentool.util.ImageUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.UnaryOperator;
 
 public class TokenTool_Controller {
   @FXML private MenuItem fileOpenPDF_Menu;
@@ -128,12 +92,18 @@ public class TokenTool_Controller {
   @FXML private MenuItem helpAboutMenu;
 
   @FXML private TitledPane saveOptionsPane;
+  @FXML private TitledPane moulinettePane;
   @FXML private TitledPane overlayOptionsPane;
   @FXML private TitledPane backgroundOptionsPane;
   @FXML private TitledPane zoomOptionsPane;
   @FXML private StackPane compositeTokenPane;
   @FXML private BorderPane tokenPreviewPane;
   @FXML private ScrollPane portraitScrollPane;
+
+  @FXML private ListView<Token> packMoulinetteListView;
+  @FXML private TextField fileNameMoulinetteTextField;
+  @FXML private Button modifyMoulinetteButton;
+  @FXML private Button deleteMoulinetteButton;
 
   @FXML private Group compositeGroup;
   @FXML private Pane dndHighlights;
@@ -596,6 +566,109 @@ public class TokenTool_Controller {
     portraitMenuItem.fire(); // Set current layer to portrait
   }
 
+  private String extractImageNameFromURL(String imageURL) {
+    URI uri = null;
+    try {
+      uri = new URI(imageURL);
+      String path = uri.getPath();
+      return path.substring(path.lastIndexOf('/') + 1);
+    } catch (URISyntaxException e) {
+      log.error("Error parsing Image " + imageURL);
+    }
+    return null;
+  }
+
+  private void updateButtonStatus() {
+    Token token = packMoulinetteListView.getSelectionModel().getSelectedItem();
+    modifyMoulinetteButton.setDisable(token == null);
+    deleteMoulinetteButton.setDisable(token == null);
+  }
+
+  private void storeListIntoPreferences() {
+    String prefs = new Gson().toJson(packMoulinetteListView.getItems());
+    AppPreferences.setPreference(AppPreferences.MOULINETTE_LIST, prefs);
+  }
+
+  @FXML
+  void changePortraitFromURLImageButton_OnAction(ActionEvent event) {
+    TextInputDialog inputDialog = new TextInputDialog("https://...");
+    inputDialog.setContentText(I18N.getString("TokenTool.openPortraitImageFromURL.url"));
+    inputDialog.setHeaderText(I18N.getString("TokenTool.openPortraitImageFromURL.title"));
+    inputDialog.showAndWait();
+    if(inputDialog.getResult() != null) {
+      try {
+        updatePortrait(new Image(inputDialog.getResult()));
+        AppPreferences.setPreference(
+                AppPreferences.LAST_PORTRAIT_IMAGE_FILE,
+                inputDialog.getResult());
+        fileNameMoulinetteTextField.setText(extractImageNameFromURL(inputDialog.getResult()));
+      } catch (Exception e) {
+        log.error("Error loading Image " + inputDialog.getResult());
+      }
+    }
+  }
+
+  @FXML
+  void addToken_OnAction(ActionEvent event) {
+    String imageName = fileNameMoulinetteTextField.getText();
+    String imageURL = AppPreferences.getPreference(AppPreferences.LAST_PORTRAIT_IMAGE_FILE, "");
+    if(imageURL != null && imageName != null && imageName.length() > 0) {
+      int offsetX = (int)Math.floor(getCurrentLayer().getTranslateX() + 0.5D);
+      int offsetY = (int)Math.floor(getCurrentLayer().getTranslateY() + 0.5D);
+      Token token = new Token(imageName, imageURL, offsetX, offsetY, getCurrentLayer().getScaleX());
+      packMoulinetteListView.getItems().add(token);
+    }
+    updateButtonStatus();
+    storeListIntoPreferences();
+  }
+
+  @FXML
+  void modifyToken_OnAction(ActionEvent event) {
+    Token token = packMoulinetteListView.getSelectionModel().getSelectedItem();
+    String imageName = fileNameMoulinetteTextField.getText();
+    String imageURL = AppPreferences.getPreference(AppPreferences.LAST_PORTRAIT_IMAGE_FILE, "");
+    if(token != null && imageURL != null && imageName != null && imageName.length() > 0) {
+      token.setName(imageName);
+      token.setUrl(imageURL);
+      int offsetX = (int)Math.floor(getCurrentLayer().getTranslateX() + 0.5D);
+      int offsetY = (int)Math.floor(getCurrentLayer().getTranslateY() + 0.5D);
+      token.setOffsetX(offsetX);
+      token.setOffsetY(offsetY);
+      token.setScale(getCurrentLayer().getScaleX());
+      packMoulinetteListView.refresh();
+    }
+    updateButtonStatus();
+    storeListIntoPreferences();
+  }
+
+  @FXML
+  void deleteToken_OnAction(ActionEvent event) {
+    Token token = packMoulinetteListView.getSelectionModel().getSelectedItem();
+    if(token != null) {
+      packMoulinetteListView.getItems().remove(token);
+      packMoulinetteListView.refresh();
+    }
+    updateButtonStatus();
+    storeListIntoPreferences();
+  }
+
+  @FXML
+  void packMoulinette_OnMouseClicked(MouseEvent event) {
+    Token token = packMoulinetteListView.getSelectionModel().getSelectedItem();
+    if(token != null) {
+      updatePortrait(new Image(token.getUrl()));
+      getCurrentLayer().setTranslateX(token.getOffsetX());
+      getCurrentLayer().setTranslateY(token.getOffsetY());
+      getCurrentLayer().setScaleX(token.getScale());
+      getCurrentLayer().setScaleY(token.getScale());
+      currentImageOffset.setLocation(token.getOffsetX(), token.getOffsetY());
+      fileNameMoulinetteTextField.setText(token.getName());
+      updateTokenPreviewImageView();
+      AppPreferences.setPreference(AppPreferences.LAST_PORTRAIT_IMAGE_FILE, token.getUrl());
+    }
+    updateButtonStatus();
+  }
+
   @FXML
   void changePortraitImageButton_OnAction(ActionEvent event) {
     FileChooser fileChooser = new FileChooser();
@@ -862,7 +935,6 @@ public class TokenTool_Controller {
       getCurrentLayer().setTranslateX(x);
       getCurrentLayer().setTranslateY(y);
       currentImageOffset.setLocation(x, y);
-
       updateTokenPreviewImageView();
 
       key.consume();
@@ -1200,6 +1272,10 @@ public class TokenTool_Controller {
     overlayOptionsPane.setExpanded(expand);
   }
 
+  public void expandMoulinettePane(boolean expand) {
+    moulinettePane.setExpanded(expand);
+  }
+
   public void expandBackgroundOptionsPane(boolean expand) {
     backgroundOptionsPane.setExpanded(expand);
   }
@@ -1428,6 +1504,8 @@ public class TokenTool_Controller {
 
     portraitImageView.setTranslateX(0);
     portraitImageView.setTranslateY(0);
+    portraitImageView.setFitWidth(newPortraitImage.getWidth());
+    portraitImageView.setFitHeight(newPortraitImage.getHeight());
     portraitImageView.setScaleX(1);
     portraitImageView.setScaleY(1);
     portraitImageView.setRotate(0d);
@@ -1803,6 +1881,14 @@ public class TokenTool_Controller {
     } else {
       backgroundImageView.setImage(null);
       setBackgroundColor(Color.TRANSPARENT);
+    }
+  }
+
+  public void setMoulinetteListFromPreferences(String preferencesJson) {
+    if (preferencesJson != null) {
+      Token[] list = new Gson().fromJson(preferencesJson, new TypeToken<Token[]>() {}.getType());
+      packMoulinetteListView.setItems(FXCollections.observableArrayList(list));
+      packMoulinetteListView.refresh();
     }
   }
 

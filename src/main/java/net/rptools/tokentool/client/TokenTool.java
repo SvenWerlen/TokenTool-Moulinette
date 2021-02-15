@@ -14,13 +14,6 @@
  */
 package net.rptools.tokentool.client;
 
-import io.sentry.Sentry;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Comparator;
-import java.util.ResourceBundle;
 import javafx.application.Application;
 import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
@@ -32,23 +25,26 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import javax.imageio.spi.IIORegistry;
 import net.rptools.tokentool.AppConstants;
 import net.rptools.tokentool.AppPreferences;
 import net.rptools.tokentool.AppSetup;
 import net.rptools.tokentool.controller.TokenTool_Controller;
 import net.rptools.tokentool.util.I18N;
 import net.rptools.tokentool.util.ImageUtil;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.appender.FileAppender;
+
+import javax.imageio.spi.IIORegistry;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.ResourceBundle;
 
 /**
  * @author Jamz
@@ -100,12 +96,6 @@ public class TokenTool extends Application {
     AppSetup.install(VERSION);
     log = LogManager.getLogger(TokenTool.class);
 
-    // Log some basic info
-    log.info("Environment: " + Sentry.getStoredClient().getEnvironment());
-    if (!Sentry.getStoredClient().getEnvironment().toLowerCase().equals("production"))
-      log.info("Not in Production mode and thus will not log any events to Sentry.io");
-
-    log.info("Release: " + Sentry.getStoredClient().getRelease());
     log.info("OS: " + ThreadContext.get("OS"));
     log.info("3D Hardware Available? " + Platform.isSupported(ConditionalFeature.SCENE3D));
 
@@ -152,8 +142,8 @@ public class TokenTool extends Application {
     // Add recent list to treeview
     tokentool_Controller.updateOverlayTreeViewRecentFolder(true);
 
-    // Set the Overlay Options accordion to be default open view
-    tokentool_Controller.expandOverlayOptionsPane(true);
+    // Set the Moulinette accordion to be default open view
+    tokentool_Controller.expandMoulinettePane(true);
 
     primaryStage.setOnCloseRequest(e -> tokentool_Controller.exitApplication());
     primaryStage.show();

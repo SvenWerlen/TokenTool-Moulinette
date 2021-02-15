@@ -14,6 +14,17 @@
  */
 package net.rptools.tokentool;
 
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
+import net.rptools.tokentool.client.TokenTool;
+import net.rptools.tokentool.controller.TokenTool_Controller;
+import net.rptools.tokentool.model.Window_Preferences;
+import net.rptools.tokentool.util.FileSaveUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -21,16 +32,6 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.control.TreeItem;
-import javafx.scene.image.Image;
-import javax.imageio.ImageIO;
-import net.rptools.tokentool.client.TokenTool;
-import net.rptools.tokentool.controller.TokenTool_Controller;
-import net.rptools.tokentool.model.Window_Preferences;
-import net.rptools.tokentool.util.FileSaveUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class AppPreferences {
   private static final Logger log = LogManager.getLogger(AppPreferences.class);
@@ -65,6 +66,7 @@ public class AppPreferences {
   public static final String LAST_PDF_FILE = "lastPdfFileSaved";
   public static final String LAST_BACKGROUND_IMAGE_FILE = "lastBackgroundImageFile";
   public static final String LAST_PORTRAIT_IMAGE_FILE = "lastPortraitImageFile";
+  public static final String MOULINETTE_LIST = "moulinetteList";
 
   private static final String PORTRAIT_TRANSPARENCY = "portraitTransparency";
   private static final String PORTRAIT_BLUR = "portraitBlur";
@@ -266,6 +268,10 @@ public class AppPreferences {
         prefs.get(PORTRAIT_IMAGEVIEW_PREFERENCES, null));
     tokentool_Controller.setBackgroundFrom_Preferences(
         prefs.get(BACKGROUND_IMAGEVIEW_PREFERENCES, null));
+
+    // Restore list
+    tokentool_Controller.setMoulinetteListFromPreferences(
+        prefs.get(MOULINETTE_LIST, null));
   }
 
   public static void removeAllPreferences() {
