@@ -64,6 +64,7 @@ public class AppPreferences {
   public static final String WINDOW_CREDITS_PREFERENCES = "windowCredits_preferences";
 
   public static final String LAST_PDF_FILE = "lastPdfFileSaved";
+  public static final String LAST_JSON_FILE = "lastJSONFileSaved";
   public static final String LAST_BACKGROUND_IMAGE_FILE = "lastBackgroundImageFile";
   public static final String LAST_PORTRAIT_IMAGE_FILE = "lastPortraitImageFile";
   public static final String MOULINETTE_LIST = "moulinetteList";

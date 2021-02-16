@@ -19,6 +19,12 @@ buildscript {
 // Access Git info from build script
 plugins {
     id "org.ajoberstar.grgit" version "3.0.0"
+    id 'org.openjfx.javafxplugin' version '0.0.9'
+}
+
+javafx {
+    version = "15.0.1"
+    modules = [ 'javafx.controls', "javafx.fxml", "javafx.swing" ]
 }
 
 // Apply the java plugin to add support for Java
@@ -131,9 +137,6 @@ dependencies {
 
     implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
     implementation group: 'commons-logging', name: 'commons-logging', version: '1.2'
-
-    implementation group: 'io.sentry', name: 'sentry', version: '1.7.5'
-    implementation group: 'io.sentry', name: 'sentry-log4j2', version: '1.7.5'
 
     // For PDF image extraction
     implementation 'org.apache.pdfbox:pdfbox:2.0.10'

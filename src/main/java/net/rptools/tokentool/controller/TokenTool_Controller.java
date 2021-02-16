@@ -15,6 +15,7 @@
 package net.rptools.tokentool.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
@@ -55,10 +56,13 @@ import net.rptools.tokentool.AppPreferences;
 import net.rptools.tokentool.client.*;
 import net.rptools.tokentool.model.ImageView_Preferences;
 import net.rptools.tokentool.model.Window_Preferences;
+import net.rptools.tokentool.moulinette.Moulinette;
 import net.rptools.tokentool.moulinette.Token;
 import net.rptools.tokentool.util.FileSaveUtil;
 import net.rptools.tokentool.util.I18N;
 import net.rptools.tokentool.util.ImageUtil;
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,6 +71,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -339,7 +344,7 @@ public class TokenTool_Controller {
     addPseudoClassToLeafs(overlayTreeView);
 
     // Bind color picker to compositeTokenPane background fill
-    backgroundColorPicker.setValue(Color.TRANSPARENT);
+    backgroundColorPicker.setValue(Color.WHITE);
     ObjectProperty<Background> background = compositeTokenPane.backgroundProperty();
     background.bind(
         Bindings.createObjectBinding(
@@ -524,7 +529,7 @@ public class TokenTool_Controller {
 
   @FXML
   void removeBackgroundColorButton_OnAction(ActionEvent event) {
-    backgroundColorPicker.setValue(Color.TRANSPARENT);
+    backgroundColorPicker.setValue(Color.WHITE);
     updateTokenPreviewImageView();
   }
 
@@ -733,6 +738,34 @@ public class TokenTool_Controller {
   }
 
   @FXML
+  void fileOpenMoulinette_Menu_OnAction(ActionEvent event) {
+      FileChooser fileChooser = new FileChooser();
+      fileChooser.setTitle(I18N.getString("TokenTool.open.filechooser.title"));
+      fileChooser.getExtensionFilters().add(ImageUtil.SUPPORTED_JSON_EXTENSION_FILTER);
+
+      File lastJSONFile = new File(AppPreferences.getPreference(AppPreferences.LAST_JSON_FILE, ""));
+
+      if (lastJSONFile.exists()) fileChooser.setInitialDirectory(lastJSONFile);
+      else if (lastJSONFile.getParentFile() != null)
+          fileChooser.setInitialDirectory(lastJSONFile.getParentFile());
+
+      File selectedJSON = fileChooser.showOpenDialog((Stage) compositeGroup.getScene().getWindow());
+
+      if (selectedJSON != null) {
+          try {
+              String prefs = FileUtils.readFileToString(selectedJSON, Charsets.toCharset("utf-8"));
+              Moulinette m = new Gson().fromJson(prefs, new TypeToken<Moulinette>() {}.getType());
+              packMoulinetteListView.setItems(FXCollections.observableArrayList(m.getList()));
+              packMoulinetteListView.refresh();
+              AppPreferences.setPreference(
+                      AppPreferences.LAST_JSON_FILE, selectedJSON.getParentFile().getCanonicalPath());
+          } catch (IOException e) {
+              log.error("Error loading JSON " + selectedJSON.getAbsolutePath());
+          }
+      }
+  }
+
+  @FXML
   void fileManageOverlaysMenu_OnAction(ActionEvent event) {
     new ManageOverlays(this);
   }
@@ -740,6 +773,11 @@ public class TokenTool_Controller {
   @FXML
   void fileSaveAsMenu_OnAction(ActionEvent event) {
     saveToken();
+  }
+
+  @FXML
+  void fileSaveAsMoulinetteMenu_OnAction(ActionEvent event) {
+    saveTokenList();
   }
 
   @FXML
@@ -1296,6 +1334,37 @@ public class TokenTool_Controller {
             overlayUseAsBaseCheckbox.isSelected(),
             clipPortraitCheckbox.isSelected()));
     tokenImageView.setPreserveRatio(true);
+  }
+
+  private void saveTokenList() {
+    FileChooser fileChooser = new FileChooser();
+
+    fileChooser.getExtensionFilters().addAll(AppConstants.JSON_EXTENSION_FILTER);
+    fileChooser.setTitle(I18N.getString("TokenTool.save.filechooser.moulinette.title"));
+    fileChooser.setSelectedExtensionFilter(AppConstants.JSON_EXTENSION_FILTER);
+    File last = FileSaveUtil.getLastFile();
+    if(last != null) {
+      if(last.getParentFile() != null && last.getParentFile().exists()) {
+        fileChooser.setInitialDirectory(last.getParentFile());
+      }
+      fileChooser.setInitialFileName(last.getName());
+    }
+    File tokenSaved = fileChooser.showSaveDialog(saveOptionsPane.getScene().getWindow());
+
+    if (tokenSaved == null) return;
+
+    Moulinette m = new Moulinette(tokenSaved.getName(), "token", packMoulinetteListView.getItems());
+
+    try {
+      FileWriter writer = new FileWriter(tokenSaved);
+      writer.write(new GsonBuilder().setPrettyPrinting().create().toJson(m));
+      writer.close();
+      FileSaveUtil.setLastFile(tokenSaved);
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
   }
 
   private void saveToken() {
@@ -1880,7 +1949,7 @@ public class TokenTool_Controller {
       setBackgroundColor(imageView_Preferences.getBackgroundColor());
     } else {
       backgroundImageView.setImage(null);
-      setBackgroundColor(Color.TRANSPARENT);
+      setBackgroundColor(Color.WHITE);
     }
   }
 
