@@ -189,7 +189,7 @@
 																			</VBox.margin>
 																		</Label>
 																		<TextField fx:id="fileNameMoulinetteTextField" maxWidth="1.7976931348623157E308" promptText="%options.pane.portrait.field.tooltip" />
-                                                      <HBox prefWidth="200.0">
+                                                      <HBox prefWidth="200.0" style="-fx-spacing: 3;">
                                                          <children>
       																		  <Button mnemonicParsing="false" onAction="#addToken_OnAction" text="%options.pane.portrait.button.add_To_List">
       																			 <font>
