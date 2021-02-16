@@ -220,7 +220,7 @@ public class TokenTool extends Application {
   public static String getVersion() {
     if (!VERSION.isEmpty()) return VERSION;
 
-    VERSION = "DEVELOPMENT";
+    VERSION = "MOULINETTE";
 
     if (TokenTool.class.getPackage().getImplementationVersion() != null) {
       VERSION = TokenTool.class.getPackage().getImplementationVersion().trim();

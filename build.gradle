@@ -60,11 +60,11 @@ ext {
         tagVersion = tags.getName()
         msiVersion = tagVersion
         enviroment = "Production"
-        sentryDSN = sentry_production_dsn
+        //sentryDSN = sentry_production_dsn
     } else {
         tagVersion = 'SNAPSHOT-' + revision
         enviroment = "Development"
-        sentryDSN = sentry_development_dsn
+        //sentryDSN = sentry_development_dsn
     }
 
     // vendor, tagVersion, msiVersion, and DSN's defaults are set in gradle.properties
@@ -74,7 +74,7 @@ ext {
 // Default parameters for gradle run command
 run {
     args = [ '-v='+tagVersion, '-vendor='+vendor ]
-    applicationDefaultJvmArgs = [ "-Dsentry.environment=Development", "-Dfile.encoding=UTF-8" ]
+    applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8" ]
 
     if(System.getProperty("exec.args") != null) {
         args System.getProperty("exec.args").split()
@@ -156,18 +156,18 @@ dependencies {
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.5'				// https://mvnrepository.com/artifact/com.google.code.gson/gson
 }
 
-task configSentryRelease(type: Copy) {
-    from("build-resources/sentry.properties.template")
-    into("src/main/resources/")
-    rename("sentry.properties.template", "sentry.properties")
-    def tokens = [
-        AppVersion: "${tagVersion}",
-        Environment: "${enviroment}",
-        SentryDSN: "${sentryDSN}"
-    ]
-    expand(tokens)
-    inputs.properties(tokens)
-}
+//task configSentryRelease(type: Copy) {
+//    from("build-resources/sentry.properties.template")
+//    into("src/main/resources/")
+//    rename("sentry.properties.template", "sentry.properties")
+//    def tokens = [
+//        AppVersion: "${tagVersion}",
+//        Environment: "${enviroment}",
+//        SentryDSN: "${sentryDSN}"
+//    ]
+//    expand(tokens)
+//    inputs.properties(tokens)
+//}
 
 task uberJar(type: Jar) {
     group = 'distribution'
@@ -270,4 +270,4 @@ task createWrapper(type: Wrapper) {
 }
 
 // Configure current release tag in Sentry.io properties
-processResources.dependsOn configSentryRelease
+//processResources.dependsOn configSentryRelease
