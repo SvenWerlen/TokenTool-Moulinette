@@ -16,26 +16,6 @@ package net.rptools.tokentool.util;
 
 import com.twelvemonkeys.imageio.plugins.psd.PSDImageReader;
 import com.twelvemonkeys.imageio.plugins.psd.PSDMetadata;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Group;
-import javafx.scene.SnapshotParameters;
-import javafx.scene.image.*;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.stage.FileChooser.ExtensionFilter;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.w3c.dom.NodeList;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.metadata.IIOMetadata;
-import javax.imageio.metadata.IIOMetadataNode;
-import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -46,6 +26,25 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Group;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.image.*;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.metadata.IIOMetadataNode;
+import javax.imageio.stream.ImageInputStream;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.w3c.dom.NodeList;
 
 public class ImageUtil {
   private static final Logger log = LogManager.getLogger(ImageUtil.class);
@@ -419,7 +418,7 @@ public class ImageUtil {
       new ExtensionFilter("PDF Files", "*.pdf");
 
   public static final ExtensionFilter SUPPORTED_JSON_EXTENSION_FILTER =
-          new ExtensionFilter("JSON Files", "*.json");
+      new ExtensionFilter("JSON Files", "*.json");
 
   public static final List<ExtensionFilter> GET_EXTENSION_FILTERS() {
     List<ExtensionFilter> extensionFilters = new ArrayList<ExtensionFilter>();

@@ -17,6 +17,21 @@ package net.rptools.tokentool.controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.UnaryOperator;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -33,12 +48,12 @@ import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.effect.Glow;
@@ -51,6 +66,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
+import javax.imageio.ImageIO;
 import net.rptools.tokentool.AppConstants;
 import net.rptools.tokentool.AppPreferences;
 import net.rptools.tokentool.client.*;
@@ -66,23 +82,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.UnaryOperator;
 
 public class TokenTool_Controller {
   @FXML private MenuItem fileOpenPDF_Menu;
@@ -600,12 +599,11 @@ public class TokenTool_Controller {
     inputDialog.setContentText(I18N.getString("TokenTool.openPortraitImageFromURL.url"));
     inputDialog.setHeaderText(I18N.getString("TokenTool.openPortraitImageFromURL.title"));
     inputDialog.showAndWait();
-    if(inputDialog.getResult() != null) {
+    if (inputDialog.getResult() != null) {
       try {
         updatePortrait(new Image(inputDialog.getResult()));
         AppPreferences.setPreference(
-                AppPreferences.LAST_PORTRAIT_IMAGE_FILE,
-                inputDialog.getResult());
+            AppPreferences.LAST_PORTRAIT_IMAGE_FILE, inputDialog.getResult());
         fileNameMoulinetteTextField.setText(extractImageNameFromURL(inputDialog.getResult()));
       } catch (Exception e) {
         log.error("Error loading Image " + inputDialog.getResult());
@@ -617,9 +615,9 @@ public class TokenTool_Controller {
   void addToken_OnAction(ActionEvent event) {
     String imageName = fileNameMoulinetteTextField.getText();
     String imageURL = AppPreferences.getPreference(AppPreferences.LAST_PORTRAIT_IMAGE_FILE, "");
-    if(imageURL != null && imageName != null && imageName.length() > 0) {
-      int offsetX = (int)Math.floor(getCurrentLayer().getTranslateX() + 0.5D);
-      int offsetY = (int)Math.floor(getCurrentLayer().getTranslateY() + 0.5D);
+    if (imageURL != null && imageName != null && imageName.length() > 0) {
+      int offsetX = (int) Math.floor(getCurrentLayer().getTranslateX() + 0.5D);
+      int offsetY = (int) Math.floor(getCurrentLayer().getTranslateY() + 0.5D);
       Token token = new Token(imageName, imageURL, offsetX, offsetY, getCurrentLayer().getScaleX());
       packMoulinetteListView.getItems().add(token);
     }
@@ -632,11 +630,11 @@ public class TokenTool_Controller {
     Token token = packMoulinetteListView.getSelectionModel().getSelectedItem();
     String imageName = fileNameMoulinetteTextField.getText();
     String imageURL = AppPreferences.getPreference(AppPreferences.LAST_PORTRAIT_IMAGE_FILE, "");
-    if(token != null && imageURL != null && imageName != null && imageName.length() > 0) {
+    if (token != null && imageURL != null && imageName != null && imageName.length() > 0) {
       token.setName(imageName);
       token.setUrl(imageURL);
-      int offsetX = (int)Math.floor(getCurrentLayer().getTranslateX() + 0.5D);
-      int offsetY = (int)Math.floor(getCurrentLayer().getTranslateY() + 0.5D);
+      int offsetX = (int) Math.floor(getCurrentLayer().getTranslateX() + 0.5D);
+      int offsetY = (int) Math.floor(getCurrentLayer().getTranslateY() + 0.5D);
       token.setOffsetX(offsetX);
       token.setOffsetY(offsetY);
       token.setScale(getCurrentLayer().getScaleX());
@@ -649,7 +647,7 @@ public class TokenTool_Controller {
   @FXML
   void deleteToken_OnAction(ActionEvent event) {
     Token token = packMoulinetteListView.getSelectionModel().getSelectedItem();
-    if(token != null) {
+    if (token != null) {
       packMoulinetteListView.getItems().remove(token);
       packMoulinetteListView.refresh();
     }
@@ -660,7 +658,7 @@ public class TokenTool_Controller {
   @FXML
   void packMoulinette_OnMouseClicked(MouseEvent event) {
     Token token = packMoulinetteListView.getSelectionModel().getSelectedItem();
-    if(token != null) {
+    if (token != null) {
       updatePortrait(token);
       updateTokenPreviewImageView();
       AppPreferences.setPreference(AppPreferences.LAST_PORTRAIT_IMAGE_FILE, token.getUrl());
@@ -670,7 +668,7 @@ public class TokenTool_Controller {
   }
 
   public void updatePortrait(Token token) {
-    if(token != null) {
+    if (token != null) {
       updatePortrait(new Image(token.getUrl()));
       getCurrentLayer().setTranslateX(token.getOffsetX());
       getCurrentLayer().setTranslateY(token.getOffsetY());
@@ -745,30 +743,30 @@ public class TokenTool_Controller {
 
   @FXML
   void fileOpenMoulinette_Menu_OnAction(ActionEvent event) {
-      FileChooser fileChooser = new FileChooser();
-      fileChooser.setTitle(I18N.getString("TokenTool.open.filechooser.title"));
-      fileChooser.getExtensionFilters().add(ImageUtil.SUPPORTED_JSON_EXTENSION_FILTER);
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle(I18N.getString("TokenTool.open.filechooser.title"));
+    fileChooser.getExtensionFilters().add(ImageUtil.SUPPORTED_JSON_EXTENSION_FILTER);
 
-      File lastJSONFile = new File(AppPreferences.getPreference(AppPreferences.LAST_JSON_FILE, ""));
+    File lastJSONFile = new File(AppPreferences.getPreference(AppPreferences.LAST_JSON_FILE, ""));
 
-      if (lastJSONFile.exists()) fileChooser.setInitialDirectory(lastJSONFile);
-      else if (lastJSONFile.getParentFile() != null)
-          fileChooser.setInitialDirectory(lastJSONFile.getParentFile());
+    if (lastJSONFile.exists()) fileChooser.setInitialDirectory(lastJSONFile);
+    else if (lastJSONFile.getParentFile() != null)
+      fileChooser.setInitialDirectory(lastJSONFile.getParentFile());
 
-      File selectedJSON = fileChooser.showOpenDialog((Stage) compositeGroup.getScene().getWindow());
+    File selectedJSON = fileChooser.showOpenDialog((Stage) compositeGroup.getScene().getWindow());
 
-      if (selectedJSON != null) {
-          try {
-              String prefs = FileUtils.readFileToString(selectedJSON, Charsets.toCharset("utf-8"));
-              Moulinette m = new Gson().fromJson(prefs, new TypeToken<Moulinette>() {}.getType());
-              packMoulinetteListView.setItems(FXCollections.observableArrayList(m.getList()));
-              packMoulinetteListView.refresh();
-              AppPreferences.setPreference(
-                      AppPreferences.LAST_JSON_FILE, selectedJSON.getParentFile().getCanonicalPath());
-          } catch (IOException e) {
-              log.error("Error loading JSON " + selectedJSON.getAbsolutePath());
-          }
+    if (selectedJSON != null) {
+      try {
+        String prefs = FileUtils.readFileToString(selectedJSON, Charsets.toCharset("utf-8"));
+        Moulinette m = new Gson().fromJson(prefs, new TypeToken<Moulinette>() {}.getType());
+        packMoulinetteListView.setItems(FXCollections.observableArrayList(m.getList()));
+        packMoulinetteListView.refresh();
+        AppPreferences.setPreference(
+            AppPreferences.LAST_JSON_FILE, selectedJSON.getParentFile().getCanonicalPath());
+      } catch (IOException e) {
+        log.error("Error loading JSON " + selectedJSON.getAbsolutePath());
       }
+    }
   }
 
   @FXML
@@ -1354,8 +1352,8 @@ public class TokenTool_Controller {
     fileChooser.setTitle(I18N.getString("TokenTool.save.filechooser.moulinette.title"));
     fileChooser.setSelectedExtensionFilter(AppConstants.JSON_EXTENSION_FILTER);
     File last = FileSaveUtil.getLastFile();
-    if(last != null) {
-      if(last.getParentFile() != null && last.getParentFile().exists()) {
+    if (last != null) {
+      if (last.getParentFile() != null && last.getParentFile().exists()) {
         fileChooser.setInitialDirectory(last.getParentFile());
       }
       fileChooser.setInitialFileName(last.getName());
@@ -1375,7 +1373,6 @@ public class TokenTool_Controller {
     } catch (IOException e) {
       e.printStackTrace();
     }
-
   }
 
   private void saveToken() {

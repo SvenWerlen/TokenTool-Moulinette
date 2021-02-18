@@ -16,6 +16,12 @@ package net.rptools.tokentool.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -32,32 +38,23 @@ import net.rptools.tokentool.util.I18N;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class GenerateBundle_Controller {
   private static final Logger log = LogManager.getLogger(GenerateBundle_Controller.class);
 
-  @FXML
-  private Button buttonCancel;
-  @FXML
-  private Button buttonOK;
-  @FXML
-  private TextField inputBundle;
-  //@FXML
-  //private TextField inputFrame;
+  @FXML private Button buttonCancel;
+  @FXML private Button buttonOK;
+  @FXML private TextField inputBundle;
+  // @FXML
+  // private TextField inputFrame;
 
   private TokenTool_Controller parent;
 
   @FXML
-  void initialize() {
-  }
+  void initialize() {}
 
-  public void setParent(TokenTool_Controller parent) { this.parent = parent; }
+  public void setParent(TokenTool_Controller parent) {
+    this.parent = parent;
+  }
 
   @FXML
   void action_OnCancel(ActionEvent event) {
@@ -69,37 +66,44 @@ public class GenerateBundle_Controller {
   void action_OnGenerate(ActionEvent event) {
 
     String bundleURL = inputBundle.getText();
-    //String frameURL = inputFrame.getText();
+    // String frameURL = inputFrame.getText();
 
     // read bundle JSON
     Moulinette moulinette = null;
-    if(bundleURL.length() > 0) {
+    if (bundleURL.length() > 0) {
       try {
-        moulinette = new Gson().fromJson(readUrl(bundleURL), new TypeToken<Moulinette>() {}.getType());
+        moulinette =
+            new Gson().fromJson(readUrl(bundleURL), new TypeToken<Moulinette>() {}.getType());
 
       } catch (Exception e) {
         log.error("Error downloading bundle config " + bundleURL);
       }
     } else {
       moulinette = new Moulinette("Current", "token", new ArrayList<>());
-      Token[] list = new Gson().fromJson(AppPreferences.getPreference(AppPreferences.MOULINETTE_LIST, null), new TypeToken<Token[]>() {}.getType());
+      Token[] list =
+          new Gson()
+              .fromJson(
+                  AppPreferences.getPreference(AppPreferences.MOULINETTE_LIST, null),
+                  new TypeToken<Token[]>() {}.getType());
       moulinette.getList().addAll(Arrays.asList(list));
     }
 
     // generate images
-    if(moulinette != null) {
+    if (moulinette != null) {
 
       DirectoryChooser dirChooser = new DirectoryChooser();
       dirChooser.setTitle(I18N.getString("TokenTool.save.dirchooser.moulinette.title"));
-      String prefsTargetFolder = AppPreferences.getPreference(AppPreferences.MOULINETTE_LAST_TARGET_FOLDER, null);
-      if(prefsTargetFolder != null) {
+      String prefsTargetFolder =
+          AppPreferences.getPreference(AppPreferences.MOULINETTE_LAST_TARGET_FOLDER, null);
+      if (prefsTargetFolder != null) {
         dirChooser.setInitialDirectory(new File(prefsTargetFolder));
       }
       File dir = dirChooser.showDialog(buttonOK.getScene().getWindow());
-      if(dir != null) {
+      if (dir != null) {
         // store into preferences
-        AppPreferences.setPreference(AppPreferences.MOULINETTE_LAST_TARGET_FOLDER, dir.getAbsolutePath());
-        for(Token t : moulinette.getList()) {
+        AppPreferences.setPreference(
+            AppPreferences.MOULINETTE_LAST_TARGET_FOLDER, dir.getAbsolutePath());
+        for (Token t : moulinette.getList()) {
           File output = new File(dir.getAbsolutePath() + File.separator + t.getName() + ".png");
           writePortraitImage(t, output);
         }
@@ -135,13 +139,11 @@ public class GenerateBundle_Controller {
       StringBuilder buffer = new StringBuilder();
       int read;
       char[] chars = new char[1024];
-      while ((read = reader.read(chars)) != -1)
-        buffer.append(chars, 0, read);
+      while ((read = reader.read(chars)) != -1) buffer.append(chars, 0, read);
 
       return buffer.toString();
     } finally {
-      if (reader != null)
-        reader.close();
+      if (reader != null) reader.close();
     }
   }
 }

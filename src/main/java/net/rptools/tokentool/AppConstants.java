@@ -14,11 +14,10 @@
  */
 package net.rptools.tokentool;
 
+import java.io.File;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser.ExtensionFilter;
-
-import java.io.File;
 
 public class AppConstants {
 
@@ -85,8 +84,7 @@ public class AppConstants {
       new ExtensionFilter(DEFAULT_IMAGE_EXTENSION_DESCRIPTION, "*" + DEFAULT_IMAGE_EXTENSION);
 
   public static final ExtensionFilter JSON_EXTENSION_FILTER =
-          new ExtensionFilter(DEFAULT_JSON_EXTENSION_DESCRIPTION, "*" + DEFAULT_JSON_EXTENSION);
-
+      new ExtensionFilter(DEFAULT_JSON_EXTENSION_DESCRIPTION, "*" + DEFAULT_JSON_EXTENSION);
 
   public static final double DEFAULT_PORTRAIT_TRANSPARENCY = 1;
   public static final double DEFAULT_PORTRAIT_BLUR = 0;

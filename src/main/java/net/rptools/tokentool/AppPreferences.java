@@ -14,17 +14,6 @@
  */
 package net.rptools.tokentool;
 
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.control.TreeItem;
-import javafx.scene.image.Image;
-import net.rptools.tokentool.client.TokenTool;
-import net.rptools.tokentool.controller.TokenTool_Controller;
-import net.rptools.tokentool.model.Window_Preferences;
-import net.rptools.tokentool.util.FileSaveUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -32,6 +21,16 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
+import javax.imageio.ImageIO;
+import net.rptools.tokentool.client.TokenTool;
+import net.rptools.tokentool.controller.TokenTool_Controller;
+import net.rptools.tokentool.model.Window_Preferences;
+import net.rptools.tokentool.util.FileSaveUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class AppPreferences {
   private static final Logger log = LogManager.getLogger(AppPreferences.class);
@@ -272,8 +271,7 @@ public class AppPreferences {
         prefs.get(BACKGROUND_IMAGEVIEW_PREFERENCES, null));
 
     // Restore list
-    tokentool_Controller.setMoulinetteListFromPreferences(
-        prefs.get(MOULINETTE_LIST, null));
+    tokentool_Controller.setMoulinetteListFromPreferences(prefs.get(MOULINETTE_LIST, null));
   }
 
   public static void removeAllPreferences() {

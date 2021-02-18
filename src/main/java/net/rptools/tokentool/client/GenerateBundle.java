@@ -14,6 +14,7 @@
  */
 package net.rptools.tokentool.client;
 
+import java.util.ResourceBundle;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -27,8 +28,6 @@ import net.rptools.tokentool.util.I18N;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ResourceBundle;
-
 public class GenerateBundle {
   private static final Logger log = LogManager.getLogger(GenerateBundle.class);
 
@@ -41,7 +40,7 @@ public class GenerateBundle {
               getClass().getResource(AppConstants.GENERATE_FXML),
               ResourceBundle.getBundle(AppConstants.TOKEN_TOOL_BUNDLE));
       Parent root = (Parent) fxmlLoader.load();
-      ((GenerateBundle_Controller)fxmlLoader.getController()).setParent(tokenTool_Controller);
+      ((GenerateBundle_Controller) fxmlLoader.getController()).setParent(tokenTool_Controller);
 
       stage = new Stage();
       Scene scene = new Scene(root);
