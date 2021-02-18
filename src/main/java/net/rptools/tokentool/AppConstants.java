@@ -39,8 +39,10 @@ public class AppConstants {
       "/net/rptools/tokentool/view/RegionSelector.fxml";
   public static final String CREDITS_FXML = "/net/rptools/tokentool/view/Credits.fxml";
   public static final String PDF_VIEW_FXML = "/net/rptools/tokentool/view/PdfView.fxml";
+  public static final String GENERATE_FXML = "/net/rptools/tokentool/view/GenerateBundle.fxml";
 
   public static final String RPTOOLS_URL = "http://www.rptools.net";
+  public static final String MOULINETTE_URL = "https://github.com/SvenWerlen/moulinette";
 
   public static final String DEFAULT_IMAGE_EXTENSION = ".png";
   public static final String DEFAULT_JSON_EXTENSION = ".json";

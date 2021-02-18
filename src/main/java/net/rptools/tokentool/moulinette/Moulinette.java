@@ -1,5 +1,7 @@
 package net.rptools.tokentool.moulinette;
 
+import com.google.gson.Gson;
+
 import java.util.List;
 
 public class Moulinette {
@@ -36,5 +38,10 @@ public class Moulinette {
 
     public void setList(List<Token> list) {
         this.list = list;
+    }
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }

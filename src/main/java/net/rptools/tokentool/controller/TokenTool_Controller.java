@@ -661,17 +661,23 @@ public class TokenTool_Controller {
   void packMoulinette_OnMouseClicked(MouseEvent event) {
     Token token = packMoulinetteListView.getSelectionModel().getSelectedItem();
     if(token != null) {
+      updatePortrait(token);
+      updateTokenPreviewImageView();
+      AppPreferences.setPreference(AppPreferences.LAST_PORTRAIT_IMAGE_FILE, token.getUrl());
+      fileNameMoulinetteTextField.setText(token.getName());
+    }
+    updateButtonStatus();
+  }
+
+  public void updatePortrait(Token token) {
+    if(token != null) {
       updatePortrait(new Image(token.getUrl()));
       getCurrentLayer().setTranslateX(token.getOffsetX());
       getCurrentLayer().setTranslateY(token.getOffsetY());
       getCurrentLayer().setScaleX(token.getScale());
       getCurrentLayer().setScaleY(token.getScale());
       currentImageOffset.setLocation(token.getOffsetX(), token.getOffsetY());
-      fileNameMoulinetteTextField.setText(token.getName());
-      updateTokenPreviewImageView();
-      AppPreferences.setPreference(AppPreferences.LAST_PORTRAIT_IMAGE_FILE, token.getUrl());
     }
-    updateButtonStatus();
   }
 
   @FXML
@@ -778,6 +784,11 @@ public class TokenTool_Controller {
   @FXML
   void fileSaveAsMoulinetteMenu_OnAction(ActionEvent event) {
     saveTokenList();
+  }
+
+  @FXML
+  void generateBundleMenu_OnAction(ActionEvent event) {
+    new GenerateBundle(this);
   }
 
   @FXML
@@ -1401,7 +1412,7 @@ public class TokenTool_Controller {
     updateOverlayTreeViewRecentFolder(true);
   }
 
-  private boolean writeTokenImage(File tokenFile) {
+  public boolean writeTokenImage(File tokenFile) {
     try {
       Image tokenImage;
       if (clipPortraitCheckbox.isSelected())

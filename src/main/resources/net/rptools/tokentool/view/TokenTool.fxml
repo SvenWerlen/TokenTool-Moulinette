@@ -70,6 +70,15 @@
 								</MenuItem>
 							</items>
 						</Menu>
+						<Menu text="%menu.title.generate">
+							<items>
+								<MenuItem fx:id="generateBundleMenu" onAction="#generateBundleMenu_OnAction" text="%menu.title.generate.bundle">
+									<accelerator>
+										<KeyCodeCombination alt="UP" code="B" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+									</accelerator>
+								</MenuItem>
+							</items>
+						</Menu>
 						<Menu fx:id="helpAboutMenu" text="%menu.title.help">
 							<items>
 								<MenuItem fx:id="helpResetMenu" onAction="#helpResetMenu_OnAction" text="%menu.title.help.reset" />

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="329.0" prefWidth="413.0" style="-fx-padding: 10;" stylesheets="@../css/TokenTool.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.rptools.tokentool.controller.GenerateBundle_Controller">
+   <children>
+      <TextArea text="%TokenTool.generate.bundle.description" wrapText="true" />
+      <Label alignment="TOP_CENTER" contentDisplay="TOP" onMouseClicked="#action_OnClick" prefHeight="68.0" prefWidth="278.0" text="https://github.com/SvenWerlen/moulinette" textAlignment="CENTER" underline="true">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Label>
+      <Label text="%TokenTool.generate.bundle.input.label" />
+      <TextField fx:id="inputBundle" promptText="%TokenTool.generate.bundle.url" />
+      <HBox alignment="CENTER" prefHeight="84.0" prefWidth="393.0" style="-fx-spacing: 8;">
+         <children>
+            <Button fx:id="buttonCancel" mnemonicParsing="false" onAction="#action_OnCancel" text="%TokenTool.generate.bundle.cancel" />
+            <Button fx:id="buttonOK" mnemonicParsing="false" onAction="#action_OnGenerate" text="%TokenTool.generate.bundle.ok" />
+         </children>
+      </HBox>
+      <Label text="%TokenTool.generate.bundle.warning" textFill="RED" />
+   </children>
+</VBox>

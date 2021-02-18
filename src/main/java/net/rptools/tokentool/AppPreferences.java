@@ -68,6 +68,7 @@ public class AppPreferences {
   public static final String LAST_BACKGROUND_IMAGE_FILE = "lastBackgroundImageFile";
   public static final String LAST_PORTRAIT_IMAGE_FILE = "lastPortraitImageFile";
   public static final String MOULINETTE_LIST = "moulinetteList";
+  public static final String MOULINETTE_LAST_TARGET_FOLDER = "moulinetteTargetFolder";
 
   private static final String PORTRAIT_TRANSPARENCY = "portraitTransparency";
   private static final String PORTRAIT_BLUR = "portraitBlur";
