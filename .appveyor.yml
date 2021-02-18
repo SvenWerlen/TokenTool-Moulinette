@@ -9,13 +9,13 @@ image:
 init:
   - cmd: git config --global core.autocrlf true
 install:
+  - echo This is the START
   - sh: cd ..
   - sh: mkdir java
   - sh: cd java
-  - sh: wget https://download.java.net/java/GA/jdk15.0.2/0d1cfde4252546c6931946de8db48ee2/7/GPL/openjdk-15.0.2_linux-x64_bin.tar.gz
-  - sh: ls -ltrah
-  - sh: tar zxf openjdk-15.0.2_linux-x64_bin.tar.gz
-  - sh: export JAVA_HOME=$(pwd)/jdk-15.0.2
+  - sh: wget http://www.nerps.net/jdk10/jdk-10.0.2_linux-x64_bin.tar.gz
+  - sh: tar zxf jdk-10.0.2_linux-x64_bin.tar.gz
+  - sh: export JAVA_HOME=$(pwd)/jdk-10.0.2
   - sh: echo java home is $JAVA_HOME
   - sh: export PATH=$JAVA_HOME/bin:$PATH
   - sh: echo $PATH
