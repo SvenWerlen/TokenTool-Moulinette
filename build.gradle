@@ -19,12 +19,6 @@ buildscript {
 // Access Git info from build script
 plugins {
     id "org.ajoberstar.grgit" version "3.0.0"
-    id 'org.openjfx.javafxplugin' version '0.0.9'
-}
-
-javafx {
-    version = "15.0.1"
-    modules = [ 'javafx.controls', "javafx.fxml", "javafx.swing" ]
 }
 
 // Apply the java plugin to add support for Java
