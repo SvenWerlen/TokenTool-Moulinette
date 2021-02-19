@@ -5,8 +5,6 @@ skip_non_tags: false
 platform: x64
 image: 
    - Ubuntu
-init:
-  - cmd: git config --global core.autocrlf true
 install:
   - sh: cd ..
   - sh: mkdir java
@@ -24,15 +22,14 @@ install:
 build_script:
   - ./gradlew build
 after_build:
-  - sh: if [[ $APPVEYOR_REPO_TAG == "true" ]]; then ./gradlew deploy; else echo "Not creating deploy artifacts because this is not a tag build."; fi
-  - cmd: IF "%APPVEYOR_REPO_TAG%"=="true" (gradlew deploy) ELSE (echo Not creating deploy artifacts because this is not a tag build.)
+  - sh: if [[ $APPVEYOR_REPO_TAG == "true" ]]; then ./gradlew deploy deployWin deployMac; else echo "Not creating deploy artifacts because this is not a tag build."; fi
 artifacts:
-- path: build\libs\TokenTool-*.jar
-  name: TokenTool-Jar
-- path: releases\release-*\TokenTool-*.exe
-  name: TokenTool-Windows
-- path: releases\release-*\tokentool-*.deb
+- path: build/TokenTool-*-linux.*
   name: TokenTool-Linux
+- path: build/TokenTool-*-windows.*
+  name: TokenTool-Windows
+- path: build/TokenTool-*-mac.*
+  name: TokenTool-Mac
 deploy:
 - provider: GitHub
   description: Release build from AppVeyor
