@@ -48,6 +48,7 @@ test.ignoreFailures = true
 
 // Used by gradle assemble & run tasks
 mainClassName = 'net.rptools.tokentool.client.Main'
+version = "2.2-rc.4"
 
 // Custom properties
 ext {
@@ -283,6 +284,7 @@ task deploy(type: PackageTask, dependsOn: build) {
     createTarball = true
     createZipball = true
     platform = "linux"
+    version = version
     licenseFile = file("package/license/COPYING.AFFERO")
     linuxConfig {
         pngFile = file("package/linux/tokentool.png")
@@ -302,6 +304,7 @@ task deployWin(type: PackageTask, dependsOn: build) {
     createTarball = true
     createZipball = true
     platform = "windows"
+    version = version
     licenseFile = file("package/license/COPYING.AFFERO")
     winConfig {
         icoFile = file("package/windows/tokentool.ico")
@@ -320,6 +323,7 @@ task deployMac(type: PackageTask, dependsOn: build) {
     createTarball = true
     createZipball = true
     platform = "mac"
+    version = version
     licenseFile = file("package/license/COPYING.AFFERO")
     macConfig {
         icnsFile = file("package/macosx/tokentool.icns")
