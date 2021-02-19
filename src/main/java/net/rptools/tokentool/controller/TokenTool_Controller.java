@@ -17,21 +17,6 @@ package net.rptools.tokentool.controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.UnaryOperator;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -48,12 +33,12 @@ import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.effect.Glow;
@@ -66,7 +51,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
-import javax.imageio.ImageIO;
 import net.rptools.tokentool.AppConstants;
 import net.rptools.tokentool.AppPreferences;
 import net.rptools.tokentool.client.*;
@@ -82,6 +66,22 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.UnaryOperator;
 
 public class TokenTool_Controller {
   @FXML private MenuItem fileOpenPDF_Menu;
@@ -765,6 +765,32 @@ public class TokenTool_Controller {
             AppPreferences.LAST_JSON_FILE, selectedJSON.getParentFile().getCanonicalPath());
       } catch (IOException e) {
         log.error("Error loading JSON " + selectedJSON.getAbsolutePath());
+      }
+    }
+  }
+
+  @FXML
+  void fileOpenMoulinetteURL_Menu_OnAction(ActionEvent event) {
+    TextInputDialog inputDialog = new TextInputDialog("https://...");
+    inputDialog.setHeaderText(I18N.getString("TokenTool.open.url.title"));
+    inputDialog.setContentText(I18N.getString("TokenTool.open.url.label"));
+    inputDialog.showAndWait();
+    if (inputDialog.getResult() != null) {
+      try {
+        // read JSON from URL
+        URL url = new URL(inputDialog.getResult());
+        BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+        StringBuilder builder = new StringBuilder();
+        String str;
+        while (null != (str = br.readLine())) {
+          builder.append(str);
+        }
+        // Load into moulinette
+        Moulinette m = new Gson().fromJson(builder.toString(), new TypeToken<Moulinette>() {}.getType());
+        packMoulinetteListView.setItems(FXCollections.observableArrayList(m.getList()));
+        packMoulinetteListView.refresh();
+      } catch (Exception e) {
+        log.error("Error loading JSON " + inputDialog.getResult());
       }
     }
   }

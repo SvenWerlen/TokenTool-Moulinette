@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="350.0" stylesheets="@../css/TokenTool.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.rptools.tokentool.controller.Credits_Controller">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="350.0" stylesheets="@../css/TokenTool.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.rptools.tokentool.controller.Credits_Controller">
 	<children>
 		<Label styleClass="hortaFont" text="%Credits.label.Credits">
 			<font>
@@ -30,21 +30,30 @@
       </Label>
 		<AnchorPane VBox.vgrow="ALWAYS">
 			<children>
-				<ImageView fitHeight="65.0" fitWidth="71.0" layoutX="7.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="15.0">
+				<ImageView fitHeight="88.0" fitWidth="111.0" layoutX="8.0" layoutY="12.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="11.0">
+					<image>
+						<Image url="@../image/token_tool_icon.png" />
+					</image>
+				</ImageView>
+				<ImageView fitHeight="38.0" fitWidth="44.0" layoutX="240.0" layoutY="18.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="55.0">
 					<image>
 						<Image url="@../image/rptools_logo.png" />
 					</image>
 				</ImageView>
-				<ImageView fitHeight="75.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="25.0" AnchorPane.rightAnchor="0.0">
+				<ImageView fitHeight="38.0" fitWidth="134.0" layoutX="211.0" layoutY="56.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="17.0" AnchorPane.rightAnchor="13.360000610351562">
 					<image>
 						<Image url="@../image/by_rp_tools.png" />
 					</image>
 				</ImageView>
-				<Hyperlink fx:id="rptoolsHyperlink" alignment="CENTER_RIGHT" layoutY="50.0" onAction="#rptoolsHyperlink_onAction" text="www.rptools.net" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="5.0">
+				<Hyperlink fx:id="rptoolsHyperlink" alignment="CENTER_RIGHT" layoutX="198.0" layoutY="83.0" onAction="#rptoolsHyperlink_onAction" text="www.rptools.net" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="13.0">
 					<font>
-						<Font size="19.0" />
+						<Font size="14.0" />
 					</font>
 				</Hyperlink>
+            <Label contentDisplay="CENTER" layoutX="200.0" layoutY="-9.0" prefHeight="28.0" prefWidth="124.0" style="-fx-font-weight: bold;" text="Based on TokenTool" textAlignment="CENTER">
+               <font>
+                  <Font size="11.0" />
+               </font></Label>
 			</children>
 		</AnchorPane>
 	</children>

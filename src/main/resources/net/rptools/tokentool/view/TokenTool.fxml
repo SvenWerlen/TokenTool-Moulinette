@@ -29,6 +29,8 @@
 										<KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
 									</accelerator>
 								</MenuItem>
+								<MenuItem fx:id="fileOpenMoulinetteURL_Menu" onAction="#fileOpenMoulinetteURL_Menu_OnAction" text="%menu.title.file.open.moulinette.url">
+								</MenuItem>
 								<MenuItem fx:id="fileManageOverlaysMenu" onAction="#fileManageOverlaysMenu_OnAction" text="%menu.title.file.manage.overlays" visible="false">
 									<accelerator>
 										<KeyCodeCombination alt="UP" code="M" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
