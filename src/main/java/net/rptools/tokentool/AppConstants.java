@@ -14,10 +14,11 @@
  */
 package net.rptools.tokentool;
 
-import java.io.File;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser.ExtensionFilter;
+
+import java.io.File;
 
 public class AppConstants {
 
@@ -42,6 +43,8 @@ public class AppConstants {
 
   public static final String RPTOOLS_URL = "http://www.rptools.net";
   public static final String MOULINETTE_URL = "https://github.com/SvenWerlen/moulinette";
+  public static final String MOULINETTE_WEBSITE_URL = "https://github.com/SvenWerlen/TokenTool-Moulinette/blob/main/README.md";
+
 
   public static final String DEFAULT_IMAGE_EXTENSION = ".png";
   public static final String DEFAULT_JSON_EXTENSION = ".json";

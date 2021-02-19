@@ -27,6 +27,7 @@ public class Credits_Controller {
   private static final Logger log = LogManager.getLogger(Credits_Controller.class);
 
   @FXML private Hyperlink rptoolsHyperlink;
+  @FXML private Hyperlink moulinetteHyperlink;
   @FXML private Label versionLabel;
 
   @FXML
@@ -47,5 +48,11 @@ public class Credits_Controller {
   void rptoolsHyperlink_onAction(ActionEvent event) {
     log.info("Launching browser for URL " + AppConstants.RPTOOLS_URL);
     TokenTool.getInstance().getHostServices().showDocument(AppConstants.RPTOOLS_URL);
+  }
+
+  @FXML
+  void moulinetteHyperlink_onAction(ActionEvent event) {
+    log.info("Launching browser for URL " + AppConstants.MOULINETTE_WEBSITE_URL);
+    TokenTool.getInstance().getHostServices().showDocument(AppConstants.MOULINETTE_WEBSITE_URL);
   }
 }

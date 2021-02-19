@@ -95,10 +95,13 @@ public class TokenTool_Controller {
 
   @FXML private MenuItem helpAboutMenu;
 
+  @FXML private Accordion accordionMain;
+
   @FXML private TitledPane saveOptionsPane;
   @FXML private TitledPane moulinettePane;
   @FXML private TitledPane overlayOptionsPane;
   @FXML private TitledPane backgroundOptionsPane;
+  @FXML private TitledPane portraitOptionsPane;
   @FXML private TitledPane zoomOptionsPane;
   @FXML private StackPane compositeTokenPane;
   @FXML private BorderPane tokenPreviewPane;
@@ -524,6 +527,12 @@ public class TokenTool_Controller {
     // Otherwise StackPane sets width/height to largest value from the ImageView nodes within it
     imagesStackPane.minWidthProperty().bind(compositeTokenPane.widthProperty());
     imagesStackPane.minHeightProperty().bind(compositeTokenPane.heightProperty());
+
+    // Moulinette - remove useless panes
+    accordionMain.getPanes().remove(saveOptionsPane);
+    accordionMain.getPanes().remove(backgroundOptionsPane);
+    accordionMain.getPanes().remove(portraitOptionsPane);
+    accordionMain.getPanes().remove(overlayOptionsPane);
   }
 
   @FXML
