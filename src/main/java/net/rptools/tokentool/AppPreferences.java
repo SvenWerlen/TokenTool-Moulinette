@@ -28,13 +28,14 @@ import javax.imageio.ImageIO;
 import net.rptools.tokentool.client.TokenTool;
 import net.rptools.tokentool.controller.TokenTool_Controller;
 import net.rptools.tokentool.model.Window_Preferences;
+import net.rptools.tokentool.moulinette.Moulinette;
 import net.rptools.tokentool.util.FileSaveUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class AppPreferences {
   private static final Logger log = LogManager.getLogger(AppPreferences.class);
-  private static final Preferences prefs = Preferences.userNodeForPackage(TokenTool.class);
+  private static final Preferences prefs = Preferences.userNodeForPackage(Moulinette.class);
 
   // _PREFERENCES are stored as JSON objects
   private static final String OVERLAY_ASPECT = "overlayAspectToggleButton";

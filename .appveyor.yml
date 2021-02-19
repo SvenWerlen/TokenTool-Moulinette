@@ -34,7 +34,7 @@ deploy:
 - provider: GitHub
   description: Release build from AppVeyor
   auth_token: $(GITHUB_RELEASE_KEY)
-  artifact: TokenTool-Jar, TokenTool-Windows, TokenTool-Linux
+  artifact: TokenTool-Mac, TokenTool-Windows, TokenTool-Linux
   draft: false
   prerelease: true
   force_update: false

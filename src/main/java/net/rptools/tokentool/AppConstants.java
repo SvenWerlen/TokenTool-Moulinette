@@ -21,7 +21,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 
 public class AppConstants {
 
-  public static final String APP_NAME = "TokenTool";
+  public static final String APP_NAME = "Moulinette";
 
   public static final String TOKEN_TOOL_ICON = "/net/rptools/tokentool/image/token_tool_icon.png";
   public static final String REGION_SELECTOR_ICON =

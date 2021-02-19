@@ -278,7 +278,7 @@ task deploy(type: PackageTask, dependsOn: build) {
     // mandatory
     mainClass = mainClassName
     // optional
-    bundleJre = true
+    bundleJre = false
     generateInstaller = true
     administratorRequired = false
     createTarball = true
@@ -298,7 +298,6 @@ task deployWin(type: PackageTask, dependsOn: build) {
     // mandatory
     mainClass = mainClassName
     // optional
-    bundleJre = true
     generateInstaller = true
     administratorRequired = false
     createTarball = true
@@ -317,7 +316,6 @@ task deployMac(type: PackageTask, dependsOn: build) {
     // mandatory
     mainClass = mainClassName
     // optional
-    bundleJre = true
     generateInstaller = true
     administratorRequired = false
     createTarball = true
