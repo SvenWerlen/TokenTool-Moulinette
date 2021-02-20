@@ -20,15 +20,11 @@ install:
   - sh: export PATH=$JAVA_HOME/bin:$PATH
   - sh: cd ../tokentool-moulinette
   - ps: cd ..
-  - ps: mkdir java
-  - ps: cd java
   - ps: curl https://download.java.net/java/ga/jdk11/openjdk-11_windows-x64_bin.zip -o jdk.zip
   - ps: unzip jdk.zip
-  - ps: ls
-  - ps: export JAVA_HOME=$(pwd)/jdk-15.0.2
-  - ps: Set-Variable -Name "JAVA_HOME" "$pwd/jdk-15.0.2"
-  - ps: echo java home is $JAVA_HOME
-  - ps: export PATH=$JAVA_HOME/bin:$PATH
+  - ps: rm jdk.zip
+  - ps: [Environment]::SetEnvironmentVariable("JAVA_HOME", "$pwd/jdk11")
+  - ps: echo java home is $env:JAVA_HOME
   - ps: cd ../tokentool-moulinette
   - ps: sudo apt install -y fakeroot
   - ./gradlew -version
