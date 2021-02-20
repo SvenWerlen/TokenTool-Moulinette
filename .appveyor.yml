@@ -21,12 +21,12 @@ install:
   - sh: cd ../tokentool-moulinette
   - ps: cd ..
   - ps: curl https://download.java.net/java/ga/jdk11/openjdk-11_windows-x64_bin.zip -o jdk.zip
+  - ps: curl http://download2.gluonhq.com/jpackager/11/jdk.packager-windows.zip -o java-packager.zip
   - ps: unzip -qq jdk.zip
-  - ps: rm jdk.zip
+  - ps: unzip -qq java-packager.zip
   - ps: '[Environment]::SetEnvironmentVariable("JAVA_HOME", "$pwd\jdk-11")'
   - ps: cd tokentool-moulinette
   - ./gradlew -version
-  - java -version
 
 build_script:
   - ./gradlew build
