@@ -95,11 +95,11 @@ ext {
         packageType = 'deb'
         appIcon = file('package/linux/tokentool.png')
     } else if (operatingSystem.isWindows()) {
-        appIcon = file('icons/windows/Santulator.ico')
+        appIcon = file('package/windows/tokentool.ico')
         bundlerScript = file('package/bin/build-package.bat')
         generatedInnoSetupFile = file("/package/application.iss")
-        windowsExecutable = file("${bundlePath}/Santulator/Santulator.exe")
-        bundleContent = file("${bundlePath}/Santulator/*")
+        windowsExecutable = file("${bundlePath}/Moulinette/Moulinette.exe")
+        bundleContent = file("${bundlePath}/Moulinette/*")
         // Locations for the DLL workaround (see https://github.com/Santulator/Santulator/issues/5)
         windowsDllDirectory = file('C:\\Windows\\System32')
         windowsDllMSVCP140 = file("${windowsDllDirectory}/MSVCP140.dll")
