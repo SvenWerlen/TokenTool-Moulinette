@@ -1,12 +1,9 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 /*
 * For more details take a look at the Java Quickstart chapter in the Gradle
 * user guide available at https://docs.gradle.org/4.1/userguide/tutorial_java_projects.html
 */
-
-
-import io.github.fvarrui.javapackager.gradle.PackageTask
-import org.gradle.plugins.ide.eclipse.model.AccessRule
-
 buildscript {
     dependencies {
         classpath "com.diffplug.spotless:spotless-plugin-gradle:5.10.2"
@@ -25,6 +22,12 @@ plugins {
     id 'org.openjfx.javafxplugin' version '0.0.9'
 }
 
+wrapper {
+    description 'Setup the Gradle wrapper'
+    gradleVersion = '6.8.2'
+    distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
+}
+
 javafx {
     version = "15.0.1"
     modules = [ 'javafx.controls', "javafx.fxml", "javafx.swing" ]
@@ -34,14 +37,13 @@ javafx {
 apply plugin: 'base'
 apply plugin: 'application'
 apply plugin: 'java'
-apply plugin: 'eclipse'
 apply plugin: 'com.diffplug.spotless'
 apply plugin: 'io.github.fvarrui.javapackager.plugin'
 
 // Definitions
 defaultTasks 'clean', 'build'
-sourceCompatibility = 10
-targetCompatibility = 10
+sourceCompatibility = 11
+targetCompatibility = 11
 
 // Don't fail build if tests fail until tests are cleaned up
 test.ignoreFailures = true
@@ -74,6 +76,47 @@ ext {
 
     // vendor, tagVersion, msiVersion, and DSN's defaults are set in gradle.properties
     println 'Configuring for ' + project.name + " " + tagVersion + " by " + vendor
+
+    // for packaging
+    operatingSystem = org.gradle.internal.os.OperatingSystem.current()
+    publishedVersion = project.version
+    bundlerScript = file('package/bin/build-package.sh')
+    applicationLibraryPath = file("${buildDir}/libraries")
+    javafxModulePath = file("${buildDir}/javafx-modules")
+    mainJar = "TokenTool-${version}.jar"
+    bundlePath = file("${buildDir}/bundle")
+    fileAssociations = file("package/file-associations.properties")
+    extraBundlerArguments = []
+    if (operatingSystem.isMacOsX()) {
+        packageType = 'pkg'
+        appIcon = file('icons/mac/Santulator.icns')
+        extraBundlerArguments = ['--mac-sign']
+    } else if (operatingSystem.isLinux()) {
+        packageType = 'deb'
+        appIcon = file('package/linux/tokentool.png')
+    } else if (operatingSystem.isWindows()) {
+        appIcon = file('icons/windows/Santulator.ico')
+        bundlerScript = file('bin/build-package.bat')
+        generatedInnoSetupFile = file("${buildDir}/resources/main/application.iss")
+        windowsExecutable = file("${bundlePath}/Santulator/Santulator.exe")
+        bundleContent = file("${bundlePath}/Santulator/*")
+        // Locations for the DLL workaround (see https://github.com/Santulator/Santulator/issues/5)
+        windowsDllDirectory = file('C:\\Windows\\System32')
+        windowsDllMSVCP140 = file("${windowsDllDirectory}/MSVCP140.dll")
+        windowsDllVCRUNTIME140 = file("${windowsDllDirectory}/VCRUNTIME140.dll")
+    }
+    if (publishedVersion.endsWith('-SNAPSHOT')) {
+        publishedVersion = '0.0.1'
+    }
+
+    println 'Package: \n' +
+            '- Operating System = ' + operatingSystem.name + "\n" +
+            '- LibraryPath = ' + applicationLibraryPath + "\n" +
+            '- JavaFX Path = ' + javafxModulePath + "\n" +
+            '- Main JAR = ' + mainJar + "\n" +
+            '- Bundle Path = ' + bundlePath + "\n" +
+            '- FileAssociations = ' + fileAssociations + "\n"
+
 }
 
 // Default parameters for gradle run command
@@ -99,29 +142,6 @@ spotless {
         trimTrailingWhitespace()
         // or spaces. Takes an integer argument if you don't like 4
         indentWithSpaces(4)
-    }
-}
-
-// Set eclipse natures, access rules, and other settings
-// https://docs.gradle.org/current/dsl/org.gradle.plugins.ide.eclipse.model.EclipseProject.html
-eclipse {
-    project {
-        natures 'org.eclipse.buildship.core.gradleprojectnature'
-        buildCommand 'org.eclipse.buildship.core.gradleprojectbuilder'
-    }
-
-    classpath {
-        file {
-            withXml {
-                def node = it.asNode()
-                node.appendNode('classpathentry', [kind: 'con', path: 'org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER'])
-            }
-
-            whenMerged {
-                def jre = entries.find { it.path.contains 'org.eclipse.jdt.launching.JRE_CONTAINER' }
-                jre.accessRules.add(new AccessRule('0', 'javafx/**'))
-            }
-        }
     }
 }
 
@@ -161,48 +181,6 @@ dependencies {
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.5'				// https://mvnrepository.com/artifact/com.google.code.gson/gson
 }
 
-//task configSentryRelease(type: Copy) {
-//    from("build-resources/sentry.properties.template")
-//    into("src/main/resources/")
-//    rename("sentry.properties.template", "sentry.properties")
-//    def tokens = [
-//        AppVersion: "${tagVersion}",
-//        Environment: "${enviroment}",
-//        SentryDSN: "${sentryDSN}"
-//    ]
-//    expand(tokens)
-//    inputs.properties(tokens)
-//}
-
-task uberJar(type: Jar) {
-    group = 'distribution'
-    description = 'Create uber jar for native installers'
-
-    baseName project.name + '-' + tagVersion
-
-    manifest {
-        attributes 'Implementation-Title': project.name,
-        'Implementation-Version': tagVersion,
-        'Implementation-Vendor': vendor,
-        'Git-Commit': revision,
-        'Git-Commit-SHA': revisionFull,
-        'Built-By': System.getProperty('user.name'),
-        'Built-Date': new Date(),
-        'Built-JDK': System.getProperty('java.version'),
-        'Source-Compatibility': project.sourceCompatibility,
-        'Target-Compatibility': project.targetCompatibility,
-        'Main-Class': project.mainClassName
-    }
-
-    from {
-        configurations.runtimeClasspath.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
-    with jar
-    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
-}
-
 // Currently includes license files
 task copyPackageExtras(type: Copy) {
     from('package/license/')
@@ -210,125 +188,143 @@ task copyPackageExtras(type: Copy) {
     include('*')
 }
 
-task prepareInnoSetup(type: Copy) {
-    from("build-resources/TokenTool.iss.template")
-    into("package/windows/")
-    rename("TokenTool.iss.template", "TokenTool.iss")
-    def tokens = [
-        AppName: "${project.name}",
-        AppVersion: "${tagVersion}",
-        Vendor: "${vendor}",
-        SetupIcon: "${project.projectDir.absolutePath}/package/windows/${project.name}.ico",
-        WizardImage: "${project.projectDir.absolutePath}/package/windows/${project.name}-setup.bmp",
-        Slash: "\\",
-    ]
-    expand(tokens)
-    inputs.properties(tokens)
+/** ********************************************
+ * For packaging the application
+ * ********************************************/
+
+task copyDependencies(type: Copy) {
+    from configurations.runtimeClasspath
+    from jar
+    into "${buildDir}/libraries"
 }
 
-//task deploy(dependsOn: [uberJar, copyPackageExtras, prepareInnoSetup]) {
-//    group = 'distribution'
-//    description = 'Create native installers'
-//
-//    tasks.findByName('copyPackageExtras').mustRunAfter 'uberJar'
-//
-//    doLast {
-//        println 'Deploying ' + project.name + " " + tagVersion + " by " + vendor
-//
-//        // Using the -deploy Command with Bundler Arguments
-//        // 		javapackager -deploy -native exe -BsystemWide=true -BjvmOptions=-Xmx128m -BjvmOptions=-Xms128m -outdir packages -outfile BrickBreaker -srcdir dist
-//        //		-srcfiles BrickBreaker.jar -appclass brickbreaker.Main -name BrickBreaker -title "BrickBreaker demo"
-//        // *Note: You can specify a JRE using "-Bruntime=../../../deploy-ready-jre"
-//        //		  It will bundle system/workspace JDK by default
-//        def javapackager_deploy = exec {
-//            workingDir "${project.projectDir.absolutePath}"
-//
-//            commandLine "javapackager",
-//                "-deploy", "-v",
-//                "-native", "installer",
-//                "-appclass", mainClassName,
-//                "-srcdir", "build/libs",
-//                "-outdir", "releases/release-"+tagVersion,
-//                "-outfile", project.name,
-//                "-name", project.name,
-//                "-description", project.name + " " + tagVersion + " by " + vendor,
-//                "-title", project.name,
-//                "-vendor", vendor,
-//                "-BdropinResourcesRoot=.",
-//                "-BinstalldirChooser=true",
-//                "-BsystemWide=false",
-//                "-BmenuHint=true",
-//                "-Bwin.menuGroup=" + vendor,
-//                "-BshortcutHint=true",
-//                "-BappVersion=" + tagVersion,
-//                "-Bwin.msi.productVersion=" + msiVersion,
-//                "-BlicenseFile=COPYING.AFFERO",
-//                "-BlicenseType='GNU AFFERO GENERAL PUBLIC LICENSE'",
-//                "-Bcategory=Graphics",
-//                "-Bemail=tokentool@rptools.net"
-//        }
-//    }
-//}
-
-task  (type: Wrapper) {
-    gradleVersion = '6.8.2'
+task copyJavafxModules(type: Copy) {
+    from configurations.runtimeClasspath
+    include "javafx*${javafx.platform.classifier}.jar"
+    into "${buildDir}/javafx-modules"
 }
 
-task deploy(type: PackageTask, dependsOn: build) {
-    // mandatory
-    mainClass = mainClassName
-    // optional
-    bundleJre = false
-    generateInstaller = true
-    administratorRequired = false
-    createTarball = true
-    createZipball = true
-    platform = "linux"
-    version = version
-    licenseFile = file("package/license/COPYING.AFFERO")
-    linuxConfig {
-        pngFile = file("package/linux/tokentool.png")
-        xpmFile = file("package/linux/tokentool.png")
-        generateDeb = true
-        generateRpm = true
+task recreateIconMacApp(type: Exec) {
+    description 'Regenerate the Mac application icon'
+    commandLine 'sh', file('bin/mac-icon.sh'), file('icons/App1024.png'), file('icons/mac'), 'Santulator'
+}
+
+task recreateIconMacSession(type: Exec) {
+    description 'Regenerate the Mac session file icon'
+    commandLine 'sh', file('bin/mac-icon.sh'), file('icons/Doc1024.png'), file('icons/mac'), 'SantulatorSession'
+}
+
+task recreateIconWindowsApp(type: Exec) {
+    description 'Regenerate the Windows application icon'
+    commandLine 'sh', file('bin/windows-icon.sh'), file('icons/App1024.png'), file('icons/windows'), 'Santulator'
+}
+
+task recreateIconWindowsSession(type: Exec) {
+    description 'Regenerate the Windows session file icon'
+    commandLine 'sh', file('bin/windows-icon.sh'), file('icons/Doc1024.png'), file('icons/windows'), 'SantulatorSession'
+}
+
+task recreateIcons(dependsOn: [recreateIconMacApp, recreateIconMacSession, recreateIconWindowsApp, recreateIconWindowsSession]) {
+    description 'Regenerate all the application bundle icons'
+}
+
+task checkBundlingEnvironment {
+    description 'Check the environment for building the installable bundle'
+    doLast {
+        if (operatingSystem.isWindows()) {
+            def javaHome = System.env.JAVA_HOME
+
+            if (javaHome) {
+                def javaExecutable = file("${javaHome}/bin/java.exe")
+                def packagerFile = file("${javaHome}/bin/jpackager.exe")
+                def jmodFile = file("${javaHome}/jmods/jdk.packager.jar")
+
+                if (!javaExecutable.exists()) {
+                    throw new GradleException("Unable to find Java executable '${javaExecutable}'")
+                }
+                if (!packagerFile.exists()) {
+                    throw new GradleException("Unable to find Java packager executable at '${packagerFile}'")
+                }
+                if (!jmodFile.exists()) {
+                    throw new GradleException("Unable to find Java packager module at '${jmodFile}'")
+                }
+                // Check existence of files for DLL workaround (see https://github.com/Santulator/Santulator/issues/5)
+                if (!windowsDllMSVCP140.exists() || !windowsDllVCRUNTIME140.exists()) {
+                    throw new GradleException("Unable to find '${windowsDllMSVCP140}' and '${windowsDllVCRUNTIME140}' (see https://github.com/Santulator/Santulator/issues/5)")
+                }
+            } else {
+                throw new GradleException("JAVA_HOME must be set")
+            }
+        } else {
+            if (project.hasProperty('javaPackagerPath')) {
+                def packagerFile = file("${javaPackagerPath}/jpackager")
+
+                if (!packagerFile.exists() || !packagerFile.isFile()) {
+                    throw new GradleException("The Java Packager '$packagerFile' is missing")
+                }
+            } else {
+                throw new GradleException("Use -PjavaPackagerPath=... to specify the directory containing the Java Packager")
+            }
+        }
     }
 }
 
-task deployWin(type: PackageTask, dependsOn: build) {
-    // mandatory
-    mainClass = mainClassName
-    // optional
-    generateInstaller = true
-    administratorRequired = false
-    createTarball = true
-    createZipball = true
-    platform = "windows"
-    version = version
-    licenseFile = file("package/license/COPYING.AFFERO")
-    winConfig {
-        icoFile = file("package/windows/tokentool.ico")
-        generateSetup = true
-        generateMsi = true
+task createBundle(type: Exec, dependsOn: [processResources, checkBundlingEnvironment]) {
+    description 'Build the installable bundle'
+    if (operatingSystem.isWindows()) {
+        commandLine 'cmd', '/c',
+                bundlerScript,
+                "${javafxModulePath}",
+                applicationLibraryPath,
+                bundlePath,
+                mainJar,
+                publishedVersion,
+                appIcon
+    } else {
+        commandLine = ['sh',
+                       bundlerScript,
+                       "${-> file("${javaPackagerPath}/jpackager")}",
+                       packageType,
+                       "${javafxModulePath}",
+                       applicationLibraryPath,
+                       bundlePath,
+                       mainJar,
+                       publishedVersion,
+                       fileAssociations,
+                       appIcon,
+                       *extraBundlerArguments]
     }
 }
 
-task deployMac(type: PackageTask, dependsOn: build) {
-    // mandatory
-    mainClass = mainClassName
-    // optional
-    generateInstaller = true
-    administratorRequired = false
-    createTarball = true
-    createZipball = true
-    platform = "mac"
-    version = version
-    licenseFile = file("package/license/COPYING.AFFERO")
-    macConfig {
-        icnsFile = file("package/macosx/tokentool.icns")
-        generateDmg = true
-        generatePkg = true
-    }
-}
+createBundle.dependsOn ':copyDependencies', ':copyJavafxModules'
 
-// Configure current release tag in Sentry.io properties
-//processResources.dependsOn configSentryRelease
+if (operatingSystem.isWindows()) {
+    processResources {
+        filesMatching('application.iss') {
+            filter ReplaceTokens, tokens: [
+                    'bundle.version': publishedVersion,
+                    'executable.location': windowsExecutable.toString(),
+                    'bundle.content': bundleContent.toString()
+            ]
+        }
+    }
+
+    task completeInnoSetup(dependsOn: processResources) {
+        doLast {
+            copy {
+                from 'icons/windows'
+                into "${bundlePath}/Santulator"
+                include 'SantulatorSession.ico'
+            }
+            // Copy files for DLL workaround (see https://github.com/Santulator/Santulator/issues/5)
+            copy {
+                from windowsDllMSVCP140
+                from windowsDllVCRUNTIME140
+                into "${bundlePath}/Santulator"
+            }
+            println("Inno Setup file: ${generatedInnoSetupFile}")
+        }
+    }
+
+    createBundle.finalizedBy completeInnoSetup
+}
