@@ -24,9 +24,8 @@ install:
   - ps: unzip jdk.zip
   - ps: rm jdk.zip
   - ps: '[Environment]::SetEnvironmentVariable("JAVA_HOME", "$pwd/jdk11")'
-  - ps: echo java home is $env:JAVA_HOME
-  - ps: cd ../tokentool-moulinette
-  - ps: sudo apt install -y fakeroot
+  - ps: echo 'java home is $env:JAVA_HOME'
+  - ps: cd tokentool-moulinette
   - ./gradlew -version
   - java -version
 
