@@ -6,7 +6,7 @@ platform: x64
 image: 
    - Previous Visual Studio 2019
 environment:
-  APPVEYOR_RDP_PASSWORD: 'Choppe123456#Bla'
+  APPVEYOR_RDP_PASSWORD: 'Test123#'
 init:
   - cmd: git config --global core.autocrlf true
 install:
@@ -22,6 +22,7 @@ install:
   - ps: cd ..
   - ps: mkdir java
   - ps: cd java
+  - ps: echo $pwd
   - ps: wget https://download.java.net/java/GA/jdk15.0.2/0d1cfde4252546c6931946de8db48ee2/7/GPL/openjdk-15.0.2_linux-x64_bin.tar.gz
   - ps: tar zxf openjdk-15.0.2_linux-x64_bin.tar.gz
   - ps: export JAVA_HOME=$(pwd)/jdk-15.0.2
