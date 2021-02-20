@@ -291,7 +291,7 @@ createBundle.dependsOn ':copyDependencies', ':copyJavafxModules'
 
 if (operatingSystem.isWindows()) {
     processResources {
-        filesMatching('package/application.iss') {
+        filesMatching('application.iss') {
             filter ReplaceTokens, tokens: [
                     'bundle.version': publishedVersion,
                     'executable.location': windowsExecutable.toString(),
