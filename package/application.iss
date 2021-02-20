@@ -2,7 +2,7 @@
 
 #define MyAppName "Moulinette"
 #define MyAppVersion "@bundle.version@"
-#define MyAppPublisher "Adam Carroll"
+#define MyAppPublisher "Sven Werlen"
 #define MyAppURL "https://github.com/SvenWerlen/TokenTool-Moulinette"
 #define MyAppExeName "Moulinette.exe"
 
@@ -10,7 +10,7 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{174F6867-7486-4C20-96B3-0F57311A4BD9}
+AppId={7a786125-2398-4e51-8133-129311361fa5}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}

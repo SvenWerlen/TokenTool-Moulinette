@@ -25,13 +25,15 @@ install:
   - ps: unzip -qq jdk.zip
   - ps: unzip -qq java-packager.zip
   - ps: '[Environment]::SetEnvironmentVariable("JAVA_HOME", "$pwd\jdk-11")'
+  - ps: mv jpackager.exe jdk-11/bin
+  - ps: mv jdk.packager.jar jdk-11/jmods
   - ps: cd tokentool-moulinette
   - ./gradlew -version
 
 build_script:
   - ./gradlew build
 after_build:
-  - cmd: gradlew clean build createBundle -PjavaPackagerPath=../java-packager/
+  - ./gradlew createBundle
 artifacts:
 - path: build/TokenTool-*-linux.*
   name: TokenTool-Linux
