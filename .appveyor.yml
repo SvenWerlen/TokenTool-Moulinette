@@ -5,6 +5,8 @@ skip_non_tags: false
 platform: x64
 image: 
    - Visual Studio 2017
+environment:
+  APPVEYOR_RDP_PASSWORD: 'Choppe123456#Bla'
 init:
   - cmd: git config --global core.autocrlf true
 install:
