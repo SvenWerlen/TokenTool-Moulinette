@@ -23,8 +23,7 @@ install:
   - ps: curl https://download.java.net/java/ga/jdk11/openjdk-11_windows-x64_bin.zip -o jdk.zip
   - ps: unzip jdk.zip
   - ps: rm jdk.zip
-  - ps: '[Environment]::SetEnvironmentVariable("JAVA_HOME", "$pwd/jdk11")'
-  - ps: echo 'java home is $env:JAVA_HOME'
+  - ps: '[Environment]::SetEnvironmentVariable("JAVA_HOME", "$pwd\jdk11")'
   - ps: cd tokentool-moulinette
   - ./gradlew -version
   - java -version
