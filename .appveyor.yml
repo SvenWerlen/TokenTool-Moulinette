@@ -34,7 +34,8 @@ build_script:
   - ./gradlew build
 after_build:
   - ./gradlew createBundle
-  - ps: "'C:/Program Files (x86)/Inno Setup 6/Compil32.exe' /cc build/resources/main/application.iss"
+  - ps: "& 'C:/Program Files (x86)/Inno Setup 6/Compil32.exe' /cc build/resources/main/application.iss"
+  - echo "Completed"
 artifacts:
 - path: build/TokenTool-*-linux.*
   name: TokenTool-Linux
