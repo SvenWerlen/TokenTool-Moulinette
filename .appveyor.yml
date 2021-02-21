@@ -7,7 +7,8 @@ image:
    - Ubuntu
 #   - Previous Visual Studio 2019
 environment:
-  APPVEYOR_RDP_PASSWORD: 'Test123#'
+  #APPVEYOR_RDP_PASSWORD: 'Test123#'
+  APPVEYOR_YML_DISABLE_PS_LINUX: true
 init:
   - cmd: git config --global core.autocrlf true
 install:
@@ -47,6 +48,7 @@ deploy:
 - provider: GitHub
   description: Release build from AppVeyor
   auth_token: $(GITHUB_RELEASE_KEY)
+  #artifact: Moulinette-Linux, Moulinette-Windows
   draft: false
   prerelease: true
   force_update: false
