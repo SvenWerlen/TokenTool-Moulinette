@@ -4,21 +4,21 @@ pull_requests:
 skip_non_tags: false
 platform: x64
 image: 
-   - Previous Visual Studio 2019
+   - Ubuntu
+#   - Previous Visual Studio 2019
 environment:
   APPVEYOR_RDP_PASSWORD: 'Test123#'
 init:
   - cmd: git config --global core.autocrlf true
 install:
   - sh: cd ..
-  - sh: mkdir java
-  - sh: cd java
-  - sh: wget https://download.java.net/java/GA/jdk15.0.2/0d1cfde4252546c6931946de8db48ee2/7/GPL/openjdk-15.0.2_linux-x64_bin.tar.gz
-  - sh: tar zxf openjdk-15.0.2_linux-x64_bin.tar.gz
-  - sh: export JAVA_HOME=$(pwd)/jdk-15.0.2
-  - sh: echo java home is $JAVA_HOME
+  - sh: curl https://download.java.net/java/ga/jdk11/openjdk-11_linux-x64_bin.tar.gz -o jdk.tar.gz
+  - sh: curl http://download2.gluonhq.com/jpackager/11/jdk.packager-linux.zip -o java-packager.zip
+  - sh: tar zxf jdk.tar.gz
+  - sh: unzip -qq java-packager.zip
+  - sh: export JAVA_HOME=$(pwd)/jdk-11
   - sh: export PATH=$JAVA_HOME/bin:$PATH
-  - sh: cd ../tokentool-moulinette
+  - sh: cd tokentool-moulinette
   - ps: cd ..
   - ps: curl https://download.java.net/java/ga/jdk11/openjdk-11_windows-x64_bin.zip -o jdk.zip
   - ps: curl http://download2.gluonhq.com/jpackager/11/jdk.packager-windows.zip -o java-packager.zip
@@ -33,16 +33,16 @@ install:
 build_script:
   - ./gradlew build
 after_build:
-  - ./gradlew createBundle
+#  - sh: if [[ $APPVEYOR_REPO_TAG == "true" ]]; then ./gradlew createBundle -PjavaPackagerPath=../java-packager/ else echo "Not creating deploy artifacts because this is not a tag build."; fi
+  - sh: ./gradlew createBundle -PjavaPackagerPath=../java-packager/
   - ps: "& 'C:/Program Files (x86)/Inno Setup 6/Compil32.exe' /cc build/resources/main/application.iss"
-  - echo "Completed"
+  - ps: Start-Sleep -Seconds 120
+  - ps: cp build/resources/main/Moulinette-*.exe build/bundle
 artifacts:
-- path: build/TokenTool-*-linux.*
-  name: TokenTool-Linux
-- path: build/TokenTool-*-windows.*
-  name: TokenTool-Windows
-- path: build/TokenTool-*-mac.*
-  name: TokenTool-Mac
+- path: build/bundle/moulinette*.deb
+  name: Moulinette-Linux
+- path: build/bundle/Moulinette*.exe
+  name: Moulinette-Windows
 deploy:
 - provider: GitHub
   description: Release build from AppVeyor
