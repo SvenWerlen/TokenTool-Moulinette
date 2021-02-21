@@ -20,6 +20,7 @@ install:
   - sh: export JAVA_HOME=$(pwd)/jdk-11
   - sh: export PATH=$JAVA_HOME/bin:$PATH
   - sh: cd tokentool-moulinette
+  - sh: sudo apt install -y fakeroot
   - ps: cd ..
   - ps: curl https://download.java.net/java/ga/jdk11/openjdk-11_windows-x64_bin.zip -o jdk.zip
   - ps: curl http://download2.gluonhq.com/jpackager/11/jdk.packager-windows.zip -o java-packager.zip
