@@ -40,7 +40,7 @@ after_build:
   - cmd: IF "%APPVEYOR_REPO_TAG%"=="true" (gradlew createBundle) ELSE (echo Not creating deploy artifacts because this is not a tag build.)
   - ps: if ($env:APPVEYOR_REPO_TAG -eq "true") { "& 'C:/Program Files (x86)/Inno Setup 6/Compil32.exe' /cc build/resources/main/application.iss" } else { echo "Skipped" }
   - ps: if ($env:APPVEYOR_REPO_TAG -eq "true") { Start-Sleep -Seconds 120 } else { echo "Skipped" }
-  - ps: if ($env:APPVEYOR_REPO_TAG -eq "true") { cp build/resources/main/Moulinette-*.exe build/bundle } else { echo "Skipped" }
+  - ps: if ($env:APPVEYOR_REPO_TAG -eq "true") { cp build/resources/main/Output/Moulinette-*.exe build/bundle } else { echo "Skipped" }
 artifacts:
 - path: build/bundle/moulinette*.deb
   name: Moulinette-Linux

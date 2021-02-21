@@ -50,7 +50,7 @@ test.ignoreFailures = true
 
 // Used by gradle assemble & run tasks
 mainClassName = 'net.rptools.tokentool.client.Main'
-version = "2.2-rc.6"
+version = "2.2-rc.7"
 
 // Custom properties
 ext {
