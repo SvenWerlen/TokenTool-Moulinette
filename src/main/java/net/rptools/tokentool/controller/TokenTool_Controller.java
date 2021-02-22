@@ -533,6 +533,18 @@ public class TokenTool_Controller {
     accordionMain.getPanes().remove(backgroundOptionsPane);
     accordionMain.getPanes().remove(portraitOptionsPane);
     accordionMain.getPanes().remove(overlayOptionsPane);
+    packMoulinetteListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Token>() {
+        public void changed(ObservableValue<? extends Token> ov,
+                            Token oldToken, Token token) {
+          if (token != null) {
+            updatePortrait(token);
+            updateTokenPreviewImageView();
+            AppPreferences.setPreference(AppPreferences.LAST_PORTRAIT_IMAGE_FILE, token.getUrl());
+            fileNameMoulinetteTextField.setText(token.getName());
+          }
+          updateButtonStatus();
+        }
+      });
   }
 
   @FXML
@@ -663,18 +675,6 @@ public class TokenTool_Controller {
     }
     updateButtonStatus();
     storeListIntoPreferences();
-  }
-
-  @FXML
-  void packMoulinette_OnMouseClicked(MouseEvent event) {
-    Token token = packMoulinetteListView.getSelectionModel().getSelectedItem();
-    if (token != null) {
-      updatePortrait(token);
-      updateTokenPreviewImageView();
-      AppPreferences.setPreference(AppPreferences.LAST_PORTRAIT_IMAGE_FILE, token.getUrl());
-      fileNameMoulinetteTextField.setText(token.getName());
-    }
-    updateButtonStatus();
   }
 
   public void updatePortrait(Token token) {
