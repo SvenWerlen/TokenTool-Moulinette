@@ -17,6 +17,20 @@ package net.rptools.tokentool.controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.UnaryOperator;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -33,12 +47,12 @@ import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.effect.Glow;
@@ -51,6 +65,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
+import javax.imageio.ImageIO;
 import net.rptools.tokentool.AppConstants;
 import net.rptools.tokentool.AppPreferences;
 import net.rptools.tokentool.client.*;
@@ -66,22 +81,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.UnaryOperator;
 
 public class TokenTool_Controller {
   @FXML private MenuItem fileOpenPDF_Menu;
@@ -533,18 +532,23 @@ public class TokenTool_Controller {
     accordionMain.getPanes().remove(backgroundOptionsPane);
     accordionMain.getPanes().remove(portraitOptionsPane);
     accordionMain.getPanes().remove(overlayOptionsPane);
-    packMoulinetteListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Token>() {
-        public void changed(ObservableValue<? extends Token> ov,
-                            Token oldToken, Token token) {
-          if (token != null) {
-            updatePortrait(token);
-            updateTokenPreviewImageView();
-            AppPreferences.setPreference(AppPreferences.LAST_PORTRAIT_IMAGE_FILE, token.getUrl());
-            fileNameMoulinetteTextField.setText(token.getName());
-          }
-          updateButtonStatus();
-        }
-      });
+    packMoulinetteListView
+        .getSelectionModel()
+        .selectedItemProperty()
+        .addListener(
+            new ChangeListener<Token>() {
+              public void changed(
+                  ObservableValue<? extends Token> ov, Token oldToken, Token token) {
+                if (token != null) {
+                  updatePortrait(token);
+                  updateTokenPreviewImageView();
+                  AppPreferences.setPreference(
+                      AppPreferences.LAST_PORTRAIT_IMAGE_FILE, token.getUrl());
+                  fileNameMoulinetteTextField.setText(token.getName());
+                }
+                updateButtonStatus();
+              }
+            });
   }
 
   @FXML
@@ -683,7 +687,8 @@ public class TokenTool_Controller {
       try {
         updatePortrait(new Image(token.getUrl()));
 
-        //log.info(String.format("Pane size = (%.2f, %.2f)", compositeTokenPane.getWidth(), compositeTokenPane.getHeight()));
+        // log.info(String.format("Pane size = (%.2f, %.2f)", compositeTokenPane.getWidth(),
+        // compositeTokenPane.getHeight()));
         double offsetX = token.getOffsetX();
         double offsetY = token.getOffsetY();
         getCurrentLayer().setTranslateX(offsetX);
@@ -1030,7 +1035,7 @@ public class TokenTool_Controller {
           break;
       }
 
-      //log.info(String.format("Layer position = (%.2f, %.2f)", x, y));
+      // log.info(String.format("Layer position = (%.2f, %.2f)", x, y));
       getCurrentLayer().setTranslateX(x);
       getCurrentLayer().setTranslateY(y);
       currentImageOffset.setLocation(x, y);
