@@ -16,12 +16,6 @@ package net.rptools.tokentool.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -37,6 +31,13 @@ import net.rptools.tokentool.moulinette.Token;
 import net.rptools.tokentool.util.I18N;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class GenerateBundle_Controller {
   private static final Logger log = LogManager.getLogger(GenerateBundle_Controller.class);
@@ -85,7 +86,11 @@ public class GenerateBundle_Controller {
               .fromJson(
                   AppPreferences.getPreference(AppPreferences.MOULINETTE_LIST, null),
                   new TypeToken<Token[]>() {}.getType());
-      moulinette.getList().addAll(Arrays.asList(list));
+      if(list != null) {
+        moulinette.getList().addAll(Arrays.asList(list));
+      } else {
+        moulinette = null;
+      }
     }
 
     // generate images
