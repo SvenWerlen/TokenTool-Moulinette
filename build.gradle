@@ -64,18 +64,18 @@ ext {
     revisionFull = head.id
 
     if (tags) {
-        tagVersion = tags.getName()
+        project.version = tags.getName()
         msiVersion = tagVersion
         enviroment = "Production"
         //sentryDSN = sentry_production_dsn
     } else {
-        tagVersion = 'SNAPSHOT-' + revision
+        project.version = 'SNAPSHOT-' + revision
         enviroment = "Development"
         //sentryDSN = sentry_development_dsn
     }
 
     // vendor, tagVersion, msiVersion, and DSN's defaults are set in gradle.properties
-    println 'Configuring for ' + project.name + " " + tagVersion + " by " + vendor
+    println 'Configuring for ' + project.name + " " + project.version + " by " + vendor
 
     // for packaging
     operatingSystem = org.gradle.internal.os.OperatingSystem.current()
@@ -83,7 +83,7 @@ ext {
     bundlerScript = file('package/bin/build-package.sh')
     applicationLibraryPath = file("${buildDir}/libraries")
     javafxModulePath = file("${buildDir}/javafx-modules")
-    mainJar = "TokenTool-${version}.jar"
+    mainJar = "TokenTool-${project.version}.jar"
     bundlePath = file("${buildDir}/bundle")
     fileAssociations = file("package/file-associations.properties")
     extraBundlerArguments = []
