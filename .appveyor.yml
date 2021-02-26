@@ -4,7 +4,7 @@ pull_requests:
 skip_non_tags: false
 platform: x64
 image: 
-#   - Ubuntu
+   - Ubuntu
    - Previous Visual Studio 2019
 environment:
   #APPVEYOR_RDP_PASSWORD: 'Test123#'
